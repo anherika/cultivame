@@ -54,3 +54,8 @@ Cultívame nace del proyecto de diseño de cibermedios para impulsar la creació
 ## Licencia
 
 El código de esta primera versión se publica para prototipado y validación del proyecto Cultívame.
+
+
+## Publicación
+
+La aplicación se publica automáticamente en GitHub Pages desde la rama `main` mediante GitHub Actions.
