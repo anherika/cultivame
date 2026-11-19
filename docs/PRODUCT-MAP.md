@@ -130,3 +130,69 @@ Supabase ya está conectado al proyecto. No necesitamos crear otra infraestructu
 2. Definir las primeras 30–50 plantas mexicanas.
 3. Decidir qué recomendaciones requieren revisión de una fuente experta.
 4. Definir cuándo migramos el guardado local a cuentas sincronizadas.
+
+## Fase final de definición antes de construir
+
+### 1. Mapa de navegación
+
+| Ruta | Acceso | Objetivo |
+|---|---|---|
+| `/` | Público | Presentar Cultívame y comenzar una identificación |
+| `/explorar` | Público | Buscar y filtrar plantas mexicanas |
+| `/identificar` | Público | Subir una foto y recibir un resultado |
+| `/planta/:id` | Público | Consultar ficha, cuidados y recomendaciones |
+| `/mis-plantas` | Usuario autenticado | Ver únicamente las plantas propias |
+| `/mis-plantas/:id` | Usuario autenticado | Registrar estado, notas y revisiones |
+| `/cuenta` | Usuario autenticado | Gestionar sesión y preferencias |
+
+### 2. Regla de propiedad
+
+El catálogo botánico es público. Todo lo que una persona agrega o registra es privado y pertenece a `auth.uid()`:
+
+```txt
+user_plants.user_id = auth.uid()
+identifications.user_id = auth.uid()
+care_logs.user_id = auth.uid()
+```
+
+La interfaz no decide qué datos puede ver una persona: esa protección vive en las políticas RLS de Supabase.
+
+### 3. Flujo de identificación
+
+```mermaid
+sequenceDiagram
+  participant U as Persona
+  participant R as React
+  participant S as Supabase
+  participant I as Servicio visual
+  U->>R: Sube fotografía
+  R->>S: Envía imagen a Edge Function
+  S->>I: Solicita identificación
+  I-->>S: Especie, alternativas y confianza
+  S-->>R: Resultado normalizado
+  R-->>U: Ficha y recomendaciones
+  U->>R: Guardar planta
+  R->>S: Inserta user_plants con su usuario
+```
+
+### 4. Orden de construcción
+
+1. Confirmar conexión actual de Supabase y variables de entorno.
+2. Confirmar o crear Auth y el flujo de inicio de sesión.
+3. Revisar tablas existentes y agregar `user_id` donde falte.
+4. Aplicar políticas RLS y probar aislamiento entre dos usuarios.
+5. Conectar `Mis plantas` a Supabase; dejar `localStorage` solo como fallback temporal.
+6. Crear la Edge Function de identificación.
+7. Conectar recomendaciones y fuentes editoriales.
+8. Probar el journey completo con datos de prueba.
+9. Publicar una versión de prueba y medir el uso.
+
+### 5. Pruebas mínimas de aceptación
+
+- Una persona puede identificar una planta sin iniciar sesión.
+- Se solicita sesión solo al guardar o dar seguimiento.
+- Dos usuarios no pueden ver las plantas del otro.
+- Una persona puede cambiar el estado de su planta.
+- Cerrar sesión elimina el acceso a `Mis plantas`.
+- La identificación muestra confianza y alternativas.
+- Una falla del proveedor no rompe el catálogo.
