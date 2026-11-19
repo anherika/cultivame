@@ -39,11 +39,11 @@ flowchart TD
 | Capa | Responsabilidad | Primera versión |
 |---|---|---|
 | React + Vite | Interfaz, estados y journey | GitHub Pages |
-| API serverless | Ocultar claves y coordinar servicios | `/api/identify` |
+| Supabase Edge Functions | Ocultar claves y coordinar servicios | `identify-plant` |
 | Identificación | Especie probable y confianza | Pl@ntNet |
 | Datos botánicos | Taxonomía y distribución | GBIF / iNaturalist |
 | Recomendaciones | Cuidados para México | Catálogo editorial propio |
-| Persistencia | Plantas, estados y notas | Supabase |
+| Persistencia | Plantas, estados y notas | Supabase ya conectado |
 
 ## Contrato inicial de API
 
@@ -113,10 +113,20 @@ Salida:
 - Identificaciones con confianza baja.
 - Errores o correcciones reportadas por la comunidad.
 
+## Estado del backend
+
+Supabase ya está conectado al proyecto. No necesitamos crear otra infraestructura. El siguiente trabajo consiste en auditar y completar la conexión existente:
+
+1. Confirmar el proyecto, variables públicas y cliente de Supabase.
+2. Revisar las tablas, relaciones y políticas RLS actuales.
+3. Crear o completar la Edge Function `identify-plant`.
+4. Guardar identificaciones, confianza y recomendaciones.
+5. Conectar `Mis plantas` a Supabase en lugar de depender solo de `localStorage`.
+6. Añadir autenticación cuando el flujo principal esté validado.
+
 ## Decisiones pendientes
 
-1. Elegir proveedor serverless: Cloudflare Workers, Vercel Functions o Netlify Functions.
-2. Crear cuenta y API key de Pl@ntNet.
-3. Definir las primeras 30–50 plantas mexicanas.
-4. Decidir si el login entra en el MVP o después de las primeras pruebas.
-5. Definir qué recomendaciones requieren revisión de una fuente experta.
+1. Confirmar qué proveedor de identificación se conectará desde Supabase: Pl@ntNet u otro.
+2. Definir las primeras 30–50 plantas mexicanas.
+3. Decidir qué recomendaciones requieren revisión de una fuente experta.
+4. Definir cuándo migramos el guardado local a cuentas sincronizadas.
