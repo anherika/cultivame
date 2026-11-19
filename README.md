@@ -17,6 +17,7 @@ Esta primera versión contiene el flujo base de producto:
 
 - React
 - Vite
+- Supabase
 - GitHub Actions
 - GitHub Pages
 
@@ -42,6 +43,15 @@ cp .env.example .env.local
 ```
 
 Después ejecuta el esquema de `docs/supabase-schema.sql` en Supabase. Las plantas guardadas se filtran por `auth.uid()` mediante RLS; si Supabase no está configurado, la app conserva un fallback local para pruebas.
+
+### GitHub Pages
+
+Para que la versión publicada use Supabase, crea en el repositorio:
+
+- una variable pública `VITE_SUPABASE_URL` con la URL del proyecto;
+- un secret `VITE_SUPABASE_ANON_KEY` con la clave `anon` pública.
+
+El workflow de GitHub Actions las inyecta durante el build. En Supabase agrega `https://anherika.github.io/cultivame/` como URL de redirección permitida para Google Auth. No subas `.env.local` ni claves al repositorio.
 
 ## Próxima integración: identificación real
 
