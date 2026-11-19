@@ -10,14 +10,15 @@ Esta primera versión contiene el flujo base de producto:
 - catálogo inicial de plantas;
 - búsqueda y filtros;
 - ficha de cuidados;
-- resultados de identificación simulados para validar el journey;
-- estructura preparada para conectar una API real de identificación.
+- guardado de plantas por cuenta;
+- seguimiento de estado: viva, necesita cuidados o ya no está viva;
+- conexión preparada con una Edge Function de identificación visual.
 
 ## Stack
 
 - React
 - Vite
-- Supabase
+- Supabase Auth, Database y Edge Functions
 - GitHub Actions
 - GitHub Pages
 
@@ -53,11 +54,22 @@ Para que la versión publicada use Supabase, crea en el repositorio:
 
 El workflow de GitHub Actions las inyecta durante el build. En Supabase agrega `https://anherika.github.io/cultivame/` como URL de redirección permitida para Google Auth. No subas `.env.local` ni claves al repositorio.
 
-## Próxima integración: identificación real
+### Identificación visual
 
-La arquitectura prevista separa la interfaz React de un endpoint propio que llamará a un servicio de identificación visual. La primera opción a evaluar es Pl@ntNet; después se enriquecerán los resultados con taxonomía y distribución de GBIF, iNaturalist y CONABIO.
+La función `supabase/functions/identify-plant/index.ts` llama a Pl@ntNet sin exponer la clave en el navegador. Para desplegarla con Supabase CLI:
 
-La clave de cualquier servicio externo deberá permanecer en el backend, nunca en el navegador.
+```bash
+supabase functions deploy identify-plant
+supabase secrets set PLANTNET_API_KEY=tu_clave
+```
+
+La clave de Pl@ntNet debe quedarse como secret del proyecto. Hasta que la función y las variables estén configuradas, la interfaz muestra un resultado de respaldo para poder probar el journey.
+
+## Datos y seguridad
+
+- `user_plants` usa `user_id` como dueño y RLS para impedir que una cuenta vea las plantas de otra.
+- `identifications` y `care_logs` quedan listas para guardar el historial de identificaciones y cuidados.
+- La clave de cualquier servicio externo permanece en el backend, nunca en el navegador.
 
 ## Fuentes de información previstas
 
