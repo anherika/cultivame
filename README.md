@@ -4,16 +4,14 @@ Aplicación web en React para explorar e identificar plantas comunes de México 
 
 ## Estado actual
 
-Esta primera versión ya permite validar el journey completo en el navegador:
+Esta primera versión contiene el flujo base de producto:
 
-- cargar y previsualizar una fotografía;
-- ejecutar un resultado preliminar de identificación;
-- explorar un catálogo inicial con búsqueda y filtros;
-- consultar cuidados y recomendaciones;
-- guardar plantas en “Mis plantas” usando almacenamiento local;
-- marcar cada planta como viva y bien, necesita cuidados o ya no está viva.
-
-La identificación actual es un modo de prototipo: si la foto incluye el nombre de una planta en el archivo, lo usa como pista; si no, muestra el primer resultado del catálogo. Esto permite probar la experiencia sin fingir que el modelo visual ya está conectado.
+- carga y vista previa de una fotografía;
+- catálogo inicial de plantas;
+- búsqueda y filtros;
+- ficha de cuidados;
+- resultados de identificación simulados para validar el journey;
+- estructura preparada para conectar una API real de identificación.
 
 ## Stack
 
@@ -35,11 +33,21 @@ Para generar la versión de producción:
 npm run build
 ```
 
+## Supabase
+
+La app puede conectarse a Supabase con las variables de `.env.example`:
+
+```bash
+cp .env.example .env.local
+```
+
+Después ejecuta el esquema de `docs/supabase-schema.sql` en Supabase. Las plantas guardadas se filtran por `auth.uid()` mediante RLS; si Supabase no está configurado, la app conserva un fallback local para pruebas.
+
 ## Próxima integración: identificación real
 
-La integración recomendada para la primera app pública es Pl@ntNet detrás de un endpoint seguro. Su plan gratuito ofrece hasta 500 identificaciones al día y devuelve especies ordenadas con confianza; la clave debe vivir en un backend o función serverless, nunca en el navegador.
+La arquitectura prevista separa la interfaz React de un endpoint propio que llamará a un servicio de identificación visual. La primera opción a evaluar es Pl@ntNet; después se enriquecerán los resultados con taxonomía y distribución de GBIF, iNaturalist y CONABIO.
 
-Después podemos enriquecer las fichas con GBIF, iNaturalist, CONABIO, INIFAP y SENASICA. Las recomendaciones de cuidado deben pasar por una capa editorial propia para revisar que sean adecuadas para México y para huertos domésticos.
+La clave de cualquier servicio externo deberá permanecer en el backend, nunca en el navegador.
 
 ## Fuentes de información previstas
 
@@ -48,10 +56,6 @@ Después podemos enriquecer las fichas con GBIF, iNaturalist, CONABIO, INIFAP y 
 - CONABIO / SIAgroBD: agrobiodiversidad mexicana.
 - INIFAP: recomendaciones de cultivo.
 - SENASICA: alertas fitosanitarias.
-
-## Publicación
-
-La aplicación se publica automáticamente en GitHub Pages desde la rama `main` mediante GitHub Actions.
 
 ## Contexto del proyecto
 
